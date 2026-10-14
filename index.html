@@ -33,6 +33,14 @@
   "sameAs": ["https://www.instagram.com/mahimabatraofficial/"]
 }
 </script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EKZ4DVLCBD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-EKZ4DVLCBD');
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
@@ -571,9 +579,13 @@
   (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
   setTimeout(start, 2500);
 
+  // Analytics events
+  document.querySelectorAll('a[href*="instagram.com"]').forEach(a =>
+    a.addEventListener('click', () => gtag('event', 'instagram_click', { location: a.closest('header') ? 'header' : a.closest('.card') ? 'contact_card' : 'cta' })));
+
   // Contact card
   const card = document.getElementById('contact');
-  document.getElementById('contact-open').addEventListener('click', () => card.showModal());
+  document.getElementById('contact-open').addEventListener('click', () => { card.showModal(); gtag('event', 'contact_open'); });
   card.querySelector('.close').addEventListener('click', () => card.close());
   card.addEventListener('click', e => { if (e.target === card) card.close(); });
 
@@ -592,6 +604,7 @@
       });
       const out = await res.json().catch(() => ({}));
       if (!res.ok || String(out.success) === 'false') throw new Error(out.message || res.status);
+      gtag('event', 'enquiry_sent');
       document.getElementById('contact-body').hidden = true;
       const thanks = document.getElementById('contact-thanks');
       thanks.hidden = false;
